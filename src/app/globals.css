@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: 248 250 252;
+  --surface: 255 255 255;
+  --surface-2: 241 245 249;
+  --content: 15 23 42;
+  --muted: 100 116 139;
+  --line: 226 232 240;
+  --brand: 79 70 229;
+  --brand-hover: 67 56 202;
+  --brand-fg: 255 255 255;
+  --success: 22 163 74;
+  --warning: 202 138 4;
+  --danger: 220 38 38;
+  color-scheme: light;
+}
+
+.dark {
+  --bg: 2 6 23;
+  --surface: 15 23 42;
+  --surface-2: 30 41 59;
+  --content: 226 232 240;
+  --muted: 148 163 184;
+  --line: 34 46 66;
+  --brand: 129 140 248;
+  --brand-hover: 165 180 252;
+  --brand-fg: 12 16 33;
+  --success: 74 222 128;
+  --warning: 251 191 36;
+  --danger: 248 113 113;
+  color-scheme: dark;
+}
+
+@layer base {
+  html {
+    overflow-x: clip;
+  }
+  body {
+    @apply bg-bg text-content antialiased;
+  }
+  *,
+  *::before,
+  *::after {
+    transition: background-color 0.2s ease, border-color 0.2s ease,
+      color 0.15s ease, fill 0.2s ease, stroke 0.2s ease, box-shadow 0.2s ease;
+  }
+  input,
+  select,
+  textarea {
+    @apply bg-surface text-content border-line;
+  }
+  input:focus,
+  select:focus,
+  textarea:focus {
+    @apply outline-none ring-2 ring-brand/40 border-brand;
+  }
+  input::placeholder,
+  textarea::placeholder {
+    color: rgb(var(--muted));
+  }
+}
+
+@layer components {
+  /* filas de tabla con realce suave al pasar el mouse */
+  tbody tr {
+    transition: background-color 0.15s ease;
+  }
+  tbody tr:hover {
+    background-color: rgb(var(--surface-2) / 0.5);
+  }
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--line));
+  border-radius: 9999px;
+}

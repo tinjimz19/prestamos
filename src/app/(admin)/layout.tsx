@@ -1,13 +1,20 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { useRouter, usePathname } from 'next/navigation';
 import { getSession, clearSession, type Session } from '@/lib/auth';
 import ThemeToggle from '@/components/ThemeToggle';
 import TopLoader from '@/components/TopLoader';
 
+const NAV = [
+  { href: '/admin', label: 'Casas' },
+  { href: '/admin/ingresos', label: 'Ingresos' },
+];
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
@@ -42,6 +49,22 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <div className="font-bold leading-tight">Panel Superadmin</div>
             <div className="text-xs text-muted leading-tight">Casas de Prestamos</div>
           </div>
+          <nav className="flex items-center gap-1 ml-1 sm:ml-4">
+            {NAV.map((n) => {
+              const active = pathname === n.href;
+              return (
+                <Link
+                  key={n.href}
+                  href={n.href}
+                  className={`text-sm px-3 py-1.5 rounded-lg transition-colors ${
+                    active ? 'bg-brand/15 text-brand font-medium' : 'text-muted hover:text-content hover:bg-surface-2'
+                  }`}
+                >
+                  {n.label}
+                </Link>
+              );
+            })}
+          </nav>
         </div>
         <div className="flex items-center gap-2">
           <ThemeToggle />

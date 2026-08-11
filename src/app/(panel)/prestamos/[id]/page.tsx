@@ -2,15 +2,17 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { api, apiBase } from '@/lib/api';
 import { getSession } from '@/lib/auth';
+import { loadMiPlan, cachedPlan } from '@/lib/plan';
 import Modal from '@/components/Modal';
+import Confirm from '@/components/Confirm';
 import Pagination from '@/components/Pagination';
 import { money, fecha } from '@/lib/format';
 import { waLink } from '@/lib/whatsapp';
 import { imprimirRecibo } from '@/lib/recibo';
-import type { Prestamo, CuotaPlan, Pago, MoraResumen, Tasa, MetodoPago } from '@/types';
+import type { Prestamo, CuotaPlan, Pago, MoraResumen, Tasa, MetodoPago, SimulacionResponse } from '@/types';
 
 interface Cuota extends CuotaPlan {
   id: number;
@@ -34,6 +36,7 @@ function WaIcon() {
 
 export default function PrestamoDetallePage() {
   const params = useParams();
+  const router = useRouter();
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
 
   const [prestamo, setPrestamo] = useState<Prestamo | null>(null);
@@ -50,6 +53,18 @@ export default function PrestamoDetallePage() {
   const [pagoError, setPagoError] = useState('');
   const [pagando, setPagando] = useState(false);
   const [cuotaPage, setCuotaPage] = useState(1);
+
+  const [cancelOpen, setCancelOpen] = useState(false);
+  const [opBusy, setOpBusy] = useState(false);
+  const [refinOpen, setRefinOpen] = useState(false);
+  const [refinMsg, setRefinMsg] = useState('');
+  const hoyStr = new Date().toISOString().slice(0, 10);
+  const [refin, setRefin] = useState({ modalidad: 'frances', tasa_interes: '', plazo: '', frecuencia: 'mensual', fecha_inicio: hoyStr, monto_extra: '' });
+  const [refinPrev, setRefinPrev] = useState<SimulacionResponse | null>(null);
+  const [multimoneda, setMultimoneda] = useState<boolean>(() => {
+    const p = cachedPlan();
+    return p ? p.features.includes('multimoneda') : true;
+  });
 
   async function cargar() {
     setError('');
@@ -73,6 +88,7 @@ export default function PrestamoDetallePage() {
 
   useEffect(() => {
     cargar();
+    loadMiPlan().then((p) => p && setMultimoneda(p.features.includes('multimoneda')));
   }, [id]);
 
   async function registrarPago() {
@@ -111,6 +127,67 @@ export default function PrestamoDetallePage() {
     }
   }
 
+  async function cancelar() {
+    setOpBusy(true);
+    try {
+      const token = getSession()?.token;
+      await api(`/prestamos/${id}/cancelar`, { method: 'POST', token });
+      setCancelOpen(false);
+      await cargar();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Error');
+    } finally {
+      setOpBusy(false);
+    }
+  }
+
+  function abrirRefin() {
+    setRefinMsg('');
+    setRefinPrev(null);
+    setRefin({ modalidad: 'frances', tasa_interes: '', plazo: '', frecuencia: 'mensual', fecha_inicio: hoyStr, monto_extra: '' });
+    setRefinOpen(true);
+  }
+
+  async function simularRefin() {
+    if (!prestamo) return;
+    setRefinMsg('');
+    const base = Number(prestamo.saldo) + (Number(refin.monto_extra) || 0);
+    try {
+      const token = getSession()?.token;
+      const r = await api<SimulacionResponse>('/prestamos/simular', {
+        method: 'POST',
+        body: { modalidad: refin.modalidad, monto: base, tasa_interes: Number(refin.tasa_interes) || 0, plazo: Number(refin.plazo) || 0, frecuencia: refin.frecuencia, fecha_inicio: refin.fecha_inicio },
+        token,
+      });
+      setRefinPrev(r);
+    } catch (e) {
+      setRefinMsg(e instanceof Error ? e.message : 'Error');
+    }
+  }
+
+  async function refinanciar() {
+    setRefinMsg('');
+    if (!Number(refin.tasa_interes) || !Number(refin.plazo)) {
+      setRefinMsg('Indica tasa y plazo.');
+      return;
+    }
+    setOpBusy(true);
+    try {
+      const token = getSession()?.token;
+      const r = await api<{ id: number }>(`/prestamos/${id}/refinanciar`, {
+        method: 'POST',
+        body: { modalidad: refin.modalidad, tasa_interes: Number(refin.tasa_interes), plazo: Number(refin.plazo), frecuencia: refin.frecuencia, fecha_inicio: refin.fecha_inicio, monto_extra: Number(refin.monto_extra) || 0 },
+        token,
+      });
+      setRefinOpen(false);
+      router.push(`/prestamos/${r.id}`);
+    } catch (e) {
+      setRefinMsg(e instanceof Error ? e.message : 'Error');
+    } finally {
+      setOpBusy(false);
+    }
+  }
+
   if (error) return <div className="p-8 text-danger">{error}</div>;
   if (!prestamo)
     return (
@@ -120,6 +197,7 @@ export default function PrestamoDetallePage() {
     );
 
   const pagado = prestamo.estado === 'pagado' || Number(prestamo.saldo) <= 0;
+  const vigente = prestamo.estado === 'activo' || prestamo.estado === 'mora';
   const tel = prestamo.cliente_telefono;
   const proxima = cuotas.find((c) => Number(c.pagado) < Number(c.monto_cuota));
 
@@ -167,6 +245,22 @@ export default function PrestamoDetallePage() {
             >
               <WaIcon /> Recordatorio
             </a>
+          )}
+          {vigente && (
+            <button
+              onClick={abrirRefin}
+              className="text-sm rounded-lg px-4 py-2 border border-line text-content hover:bg-surface-2 transition-colors"
+            >
+              Refinanciar
+            </button>
+          )}
+          {vigente && (
+            <button
+              onClick={() => setCancelOpen(true)}
+              className="text-sm rounded-lg px-4 py-2 border border-danger/40 text-danger hover:bg-danger/10 transition-colors"
+            >
+              Cancelar
+            </button>
           )}
           {!pagado && (
             <button
@@ -299,17 +393,19 @@ export default function PrestamoDetallePage() {
       <Modal open={open} onClose={() => setOpen(false)} title="Registrar pago">
         {pagoError && <div className="bg-danger/10 text-danger text-sm rounded-lg px-3 py-2 mb-3">{pagoError}</div>}
         <div className="space-y-3">
-          <div className="space-y-1">
-            <label className="text-xs font-medium text-muted">Moneda</label>
-            <select
-              value={pago.moneda}
-              onChange={(e) => setPago((p) => ({ ...p, moneda: e.target.value }))}
-              className={inputCls}
-            >
-              <option value="USD">USD ($)</option>
-              <option value="VES">Bolivares (Bs)</option>
-            </select>
-          </div>
+          {multimoneda && (
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-muted">Moneda</label>
+              <select
+                value={pago.moneda}
+                onChange={(e) => setPago((p) => ({ ...p, moneda: e.target.value }))}
+                className={inputCls}
+              >
+                <option value="USD">USD ($)</option>
+                <option value="VES">Bolivares (Bs)</option>
+              </select>
+            </div>
+          )}
           <div className="space-y-1">
             <label className="text-xs font-medium text-muted">
               Monto {pago.moneda === 'VES' ? '(Bs)' : '(USD)'}
@@ -349,6 +445,81 @@ export default function PrestamoDetallePage() {
             {pagando ? 'Registrando...' : 'Registrar pago'}
           </button>
           <p className="text-xs text-muted">El abono se aplica a las cuotas mas antiguas primero.</p>
+        </div>
+      </Modal>
+
+      {/* Cancelar prestamo */}
+      <Confirm
+        open={cancelOpen}
+        title="Cancelar prestamo"
+        message={`Se marcara el prestamo #${prestamo.id} como cancelado y dejara de aparecer en cobros, ruta y cartera vigente. Los pagos ya registrados se conservan. Esta accion no se puede deshacer.`}
+        confirmLabel="Cancelar prestamo"
+        danger
+        loading={opBusy}
+        onConfirm={cancelar}
+        onClose={() => setCancelOpen(false)}
+      />
+
+      {/* Refinanciar */}
+      <Modal open={refinOpen} onClose={() => setRefinOpen(false)} title={`Refinanciar prestamo #${prestamo.id}`}>
+        {refinMsg && <div className="text-sm text-danger mb-3">{refinMsg}</div>}
+        <p className="text-sm text-muted mb-4">
+          Se cancela este prestamo y se crea uno nuevo tomando el saldo actual (<b>{money(prestamo.saldo)}</b>) como capital, mas el dinero extra que entregues.
+        </p>
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs text-muted">Modalidad</label>
+              <select value={refin.modalidad} onChange={(e) => setRefin((f) => ({ ...f, modalidad: e.target.value }))} className={inputCls}>
+                <option value="frances">Frances (cuota fija)</option>
+                <option value="flat">Flat (interes fijo)</option>
+                <option value="gota">Gota a gota</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-xs text-muted">Dinero extra (USD)</label>
+              <input type="number" min={0} step="0.01" value={refin.monto_extra} onChange={(e) => setRefin((f) => ({ ...f, monto_extra: e.target.value }))} className={inputCls} placeholder="0.00" />
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <label className="text-xs text-muted">Tasa %</label>
+              <input type="number" min={0} step="0.01" value={refin.tasa_interes} onChange={(e) => setRefin((f) => ({ ...f, tasa_interes: e.target.value }))} className={inputCls} />
+            </div>
+            <div>
+              <label className="text-xs text-muted">Plazo</label>
+              <input type="number" min={1} value={refin.plazo} onChange={(e) => setRefin((f) => ({ ...f, plazo: e.target.value }))} className={inputCls} />
+            </div>
+            <div>
+              <label className="text-xs text-muted">Frecuencia</label>
+              <select value={refin.frecuencia} onChange={(e) => setRefin((f) => ({ ...f, frecuencia: e.target.value }))} className={inputCls}>
+                <option value="diario">Diario</option>
+                <option value="semanal">Semanal</option>
+                <option value="quincenal">Quincenal</option>
+                <option value="mensual">Mensual</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label className="text-xs text-muted">Fecha de inicio</label>
+            <input type="date" value={refin.fecha_inicio} onChange={(e) => setRefin((f) => ({ ...f, fecha_inicio: e.target.value }))} className={inputCls} />
+          </div>
+
+          <button onClick={simularRefin} className="w-full border border-line text-content hover:bg-surface-2 rounded-lg py-2 text-sm transition-colors">
+            Ver plan
+          </button>
+
+          {refinPrev && (
+            <div className="bg-surface-2 rounded-lg p-3 text-sm space-y-1">
+              <div className="flex justify-between"><span className="text-muted">Capital nuevo</span><span className="text-content font-medium">{money((Number(prestamo.saldo) + (Number(refin.monto_extra) || 0)).toFixed(2))}</span></div>
+              <div className="flex justify-between"><span className="text-muted">Total a cobrar</span><span className="text-content font-medium">{money(refinPrev.monto_total)}</span></div>
+              <div className="flex justify-between"><span className="text-muted">Cuota</span><span className="text-content font-medium">{money(refinPrev.cuota)}</span></div>
+            </div>
+          )}
+
+          <button onClick={refinanciar} disabled={opBusy} className="w-full bg-gradient-to-br from-brand to-brand-hover text-brand-fg shadow-sm shadow-brand/30 hover:shadow-md active:scale-95 rounded-lg py-2.5 text-sm font-medium disabled:opacity-60">
+            {opBusy ? 'Procesando...' : 'Refinanciar'}
+          </button>
         </div>
       </Modal>
     </div>

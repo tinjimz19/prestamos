@@ -4,10 +4,11 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { api } from '@/lib/api';
 import { getSession } from '@/lib/auth';
+import { loadMiPlan } from '@/lib/plan';
 import Modal from '@/components/Modal';
 import Pagination from '@/components/Pagination';
 import { IconEye } from '@/components/icons';
-import type { Cliente } from '@/types';
+import type { Cliente, MiPlan } from '@/types';
 
 export default function ClientesPage() {
   const [clientes, setClientes] = useState<Cliente[]>([]);
@@ -15,6 +16,7 @@ export default function ClientesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [page, setPage] = useState(1);
+  const [plan, setPlan] = useState<MiPlan | null>(null);
 
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ nombre: '', cedula: '', telefono: '', direccion: '', referencia: '' });
@@ -39,7 +41,12 @@ export default function ClientesPage() {
 
   useEffect(() => {
     cargar();
+    loadMiPlan().then(setPlan);
   }, []);
+
+  const limite = plan?.limits.clientes ?? null;
+  const usoCli = plan?.uso.clientes ?? 0;
+  const tope = limite !== null && usoCli >= limite;
 
   function set(k: keyof typeof form, v: string) {
     setForm((f) => ({ ...f, [k]: v }));
@@ -81,7 +88,14 @@ export default function ClientesPage() {
     <div className="p-6 md:p-8">
       <div className="mx-auto">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-content">Clientes</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-bold text-content">Clientes</h1>
+            {limite !== null && (
+              <span className={`text-xs px-2 py-0.5 rounded-full border ${tope ? 'bg-danger/15 text-danger border-danger/30' : 'bg-surface-2 text-muted border-line'}`}>
+                {usoCli} / {limite}
+              </span>
+            )}
+          </div>
           <button
             onClick={() => setOpen(true)}
             className="bg-gradient-to-br from-brand to-brand-hover text-brand-fg shadow-sm shadow-brand/30 hover:shadow-md active:scale-95 text-sm rounded-lg px-4 py-2"

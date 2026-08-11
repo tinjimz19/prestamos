@@ -26,6 +26,12 @@ export interface Cliente {
   ruta_nombre?: string | null;
 }
 
+export interface Score {
+  valor: number | null;
+  etiqueta: string;
+  detalle: { prestamos: number; pagados: number; con_atraso: number; cuotas_vencidas: number };
+}
+
 export interface CuotaPlan {
   numero: number;
   fecha_venc: string;
@@ -347,7 +353,17 @@ export interface Plan {
   dias: number;
   max_clientes: number | null;
   max_usuarios: number | null;
+  max_prestamos: number | null;
+  features: string;
   activo: number;
+}
+
+export interface MiPlan {
+  plan_id: number | null;
+  plan_nombre: string | null;
+  limits: { clientes: number | null; usuarios: number | null; prestamos: number | null };
+  uso: { clientes: number; usuarios: number; prestamos: number };
+  features: string[];
 }
 
 export interface Casa {
@@ -368,4 +384,52 @@ export interface Casa {
   n_prestamos: number;
   n_usuarios: number;
   created_at: string;
+}
+
+export interface PagoMembresia {
+  id: number;
+  monto: string;
+  periodo: string | null;
+  fecha: string;
+  metodo: string;
+  nota: string | null;
+  casa?: string;
+}
+
+export interface VenceItem {
+  id: number;
+  nombre: string;
+  fecha_vencimiento: string;
+  estado: string;
+  dias: number;
+}
+
+export interface IngresoPorCasa {
+  id: number;
+  nombre: string;
+  total: string;
+  n: number;
+  ultimo: string | null;
+}
+
+export interface IngresoPorMes {
+  mes: string;
+  total: string;
+  n: number;
+}
+
+export interface Ingresos {
+  kpis: {
+    total: number;
+    este_mes: number;
+    n_pagos: number;
+    casas: number;
+    activas: number;
+    bloqueadas: number;
+    en_gracia: number;
+  };
+  por_mes: IngresoPorMes[];
+  por_casa: IngresoPorCasa[];
+  recientes: PagoMembresia[];
+  vencen_pronto: VenceItem[];
 }

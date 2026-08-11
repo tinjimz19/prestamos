@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { api, apiDownload } from '@/lib/api';
 import { getSession } from '@/lib/auth';
+import { loadMiPlan, cachedPlan } from '@/lib/plan';
 import { money } from '@/lib/format';
 import Pagination from '@/components/Pagination';
 import { IconEye } from '@/components/icons';
@@ -17,6 +18,10 @@ export default function ReportesPage() {
   const [hasta, setHasta] = useState(hoy);
   const [error, setError] = useState('');
   const [page, setPage] = useState(1);
+  const [excel, setExcel] = useState<boolean>(() => {
+    const p = cachedPlan();
+    return p ? p.features.includes('excel') : true;
+  });
 
   async function cargarGanancias() {
     try {
@@ -34,6 +39,7 @@ export default function ReportesPage() {
       .then(setRep)
       .catch((e) => setError(e instanceof Error ? e.message : 'Error'));
     cargarGanancias();
+    loadMiPlan().then((p) => p && setExcel(p.features.includes('excel')));
   }, []);
 
   async function exportar(tipo: string, filename: string) {
@@ -72,10 +78,14 @@ export default function ReportesPage() {
           </div>
           <button onClick={cargarGanancias} className="bg-gradient-to-br from-brand to-brand-hover text-brand-fg shadow-sm shadow-brand/30 hover:shadow-md active:scale-95 rounded-lg px-4 py-2 text-sm">Ver</button>
           <div className="flex-1" />
-          <span className="text-xs text-muted self-center">Exportar a Excel:</span>
-          <button onClick={() => exportar('cartera', 'cartera.xlsx')} className={btnOutline}>Cartera</button>
-          <button onClick={() => exportar('pagos', `pagos_${desde}_${hasta}.xlsx`)} className={btnOutline}>Pagos</button>
-          <button onClick={() => exportar('caja', `caja_${desde}_${hasta}.xlsx`)} className={btnOutline}>Caja</button>
+          {excel && (
+            <>
+              <span className="text-xs text-muted self-center">Exportar a Excel:</span>
+              <button onClick={() => exportar('cartera', 'cartera.xlsx')} className={btnOutline}>Cartera</button>
+              <button onClick={() => exportar('pagos', `pagos_${desde}_${hasta}.xlsx`)} className={btnOutline}>Pagos</button>
+              <button onClick={() => exportar('caja', `caja_${desde}_${hasta}.xlsx`)} className={btnOutline}>Caja</button>
+            </>
+          )}
         </div>
       </div>
 

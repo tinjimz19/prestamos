@@ -4,9 +4,10 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { getSession, clearSession, type Session } from '@/lib/auth';
+import { loadMiPlan } from '@/lib/plan';
 import ThemeToggle from '@/components/ThemeToggle';
 import TopLoader from '@/components/TopLoader';
-import type { Rol } from '@/types';
+import type { Rol, MiPlan } from '@/types';
 
 const ICONS: Record<string, string> = {
   '/dashboard': 'M3 9.5 12 3l9 6.5M5 9v11h14V9',
@@ -23,17 +24,17 @@ const ICONS: Record<string, string> = {
   '/configuracion': 'M12 15a3 3 0 100-6 3 3 0 000 6zM19.4 15a1.6 1.6 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.6 1.6 0 00-2.7.7 1.6 1.6 0 01-3.2 0 1.6 1.6 0 00-2.7-.7l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.6 1.6 0 00-1.3-2.7 1.6 1.6 0 010-3.2 1.6 1.6 0 001.3-2.7l-.1-.1a2 2 0 112.8-2.8l.1.1a1.6 1.6 0 001.8.3h.1a1.6 1.6 0 001-1.5 1.6 1.6 0 013.2 0 1.6 1.6 0 001 1.5h.1a1.6 1.6 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.6 1.6 0 00-.3 1.8v.1a1.6 1.6 0 001.5 1 1.6 1.6 0 010 3.2 1.6 1.6 0 00-1.5 1z',
 };
 
-const ITEMS: { href: string; label: string; roles: Rol[] }[] = [
+const ITEMS: { href: string; label: string; roles: Rol[]; feature?: string }[] = [
   { href: '/dashboard', label: 'Inicio', roles: ['admin', 'cajero', 'cobrador', 'cliente'] },
   { href: '/ruta', label: 'Mi ruta', roles: ['cobrador'] },
   { href: '/clientes', label: 'Clientes', roles: ['admin', 'cajero', 'cobrador'] },
   { href: '/prestamos/nuevo', label: 'Nuevo prestamo', roles: ['admin', 'cajero'] },
   { href: '/alertas', label: 'Alertas', roles: ['admin', 'cajero'] },
   { href: '/caja', label: 'Caja', roles: ['admin', 'cajero'] },
-  { href: '/pagos-reportados', label: 'Pagos reportados', roles: ['admin', 'cajero'] },
+  { href: '/pagos-reportados', label: 'Pagos reportados', roles: ['admin', 'cajero'], feature: 'portal' },
   { href: '/reportes', label: 'Reportes', roles: ['admin'] },
   { href: '/usuarios', label: 'Usuarios', roles: ['admin'] },
-  { href: '/auditoria', label: 'Auditoria', roles: ['admin'] },
+  { href: '/auditoria', label: 'Auditoria', roles: ['admin'], feature: 'auditoria' },
   { href: '/configuracion', label: 'Configuracion', roles: ['admin'] },
 ];
 
@@ -92,6 +93,7 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
   const pathname = usePathname();
   const [session, setSession] = useState<Session | null>(null);
+  const [plan, setPlan] = useState<MiPlan | null>(null);
   const [open, setOpen] = useState(false);
   const [collapsed, setCollapsed] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
@@ -109,6 +111,7 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
       return;
     }
     setSession(s);
+    loadMiPlan().then(setPlan);
   }, [router]);
 
   useEffect(() => {
@@ -117,7 +120,18 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
 
   if (!session) return null;
 
-  const nav = ITEMS.filter((i) => i.roles.includes(session.user.rol));
+  const nav = ITEMS.filter(
+    (i) => i.roles.includes(session.user.rol) && (!i.feature || !plan || plan.features.includes(i.feature)),
+  );
+
+  const planChip = plan?.plan_nombre ? (
+    <div className="text-[11px] text-muted">
+      Plan <span className="text-content font-medium">{plan.plan_nombre}</span>
+      {plan.limits.clientes !== null && (
+        <span> · {plan.uso.clientes}/{plan.limits.clientes} clientes</span>
+      )}
+    </div>
+  ) : null;
 
   function logout() {
     clearSession();
@@ -228,6 +242,7 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
                   {session.user.nombre}
                 </div>
                 <div className="text-xs text-muted capitalize">{session.user.rol}</div>
+                {planChip}
               </div>
               <LogoutIcon />
             </div>

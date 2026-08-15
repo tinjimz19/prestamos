@@ -19,7 +19,7 @@ export default function ClientesPage() {
   const [plan, setPlan] = useState<MiPlan | null>(null);
 
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({ nombre: '', cedula: '', telefono: '', direccion: '', referencia: '' });
+  const [form, setForm] = useState({ nombre: '', cedula: '', telefono: '', email: '', direccion: '', referencia: '' });
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState('');
 
@@ -62,7 +62,7 @@ export default function ClientesPage() {
     try {
       const token = getSession()?.token;
       await api('/clientes', { method: 'POST', body: form, token });
-      setForm({ nombre: '', cedula: '', telefono: '', direccion: '', referencia: '' });
+      setForm({ nombre: '', cedula: '', telefono: '', email: '', direccion: '', referencia: '' });
       setOpen(false);
       await cargar();
     } catch (e) {
@@ -161,6 +161,7 @@ export default function ClientesPage() {
           {field('Nombre', 'nombre', true)}
           {field('Cedula', 'cedula')}
           {field('Telefono', 'telefono')}
+          {field('Correo (para recibos)', 'email')}
           {field('Direccion', 'direccion')}
           {field('Referencia', 'referencia')}
           <button onClick={crear} disabled={saving} className="w-full bg-gradient-to-br from-brand to-brand-hover text-brand-fg shadow-sm shadow-brand/30 hover:shadow-md active:scale-95 rounded-lg py-2.5 disabled:opacity-60">

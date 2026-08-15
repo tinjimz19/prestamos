@@ -6,12 +6,14 @@ import { api } from '@/lib/api';
 import { saveSession } from '@/lib/auth';
 import ThemeToggle from '@/components/ThemeToggle';
 import TopLoader from '@/components/TopLoader';
+import Logo from '@/components/Logo';
 import type { LoginResponse } from '@/types';
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState('admin@prestamos.local');
   const [password, setPassword] = useState('');
+  const [recordar, setRecordar] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -22,7 +24,7 @@ export default function LoginPage() {
     try {
       const data = await api<LoginResponse>('/auth/login', {
         method: 'POST',
-        body: { email, password },
+        body: { email, password, recordar },
       });
       saveSession(data);
       router.push(data.user.rol === 'superadmin' ? '/admin' : '/dashboard');
@@ -52,10 +54,8 @@ export default function LoginPage() {
         className="relative w-full max-w-sm bg-surface rounded-2xl shadow-soft border border-line p-8 space-y-5 animate-fade-in"
       >
         <div className="flex flex-col items-center text-center">
-          <span className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-brand text-brand-fg font-bold text-xl mb-3">
-            P
-          </span>
-          <h1 className="text-xl font-bold text-content">Prestamos y Cobranzas</h1>
+          <Logo size={56} className="mb-3 rounded-2xl shadow-sm shadow-brand/30" />
+          <h1 className="text-xl font-bold text-content">SisPrest</h1>
           <p className="text-sm text-muted mt-1">Inicia sesion para continuar</p>
         </div>
 
@@ -87,6 +87,16 @@ export default function LoginPage() {
           />
         </div>
 
+        <label className="flex items-center gap-2 text-sm text-muted select-none cursor-pointer">
+          <input
+            type="checkbox"
+            checked={recordar}
+            onChange={(e) => setRecordar(e.target.checked)}
+            className="accent-brand w-4 h-4"
+          />
+          Recordar este dispositivo (60 dias)
+        </label>
+
         <button
           type="submit"
           disabled={loading}
@@ -95,9 +105,9 @@ export default function LoginPage() {
           {loading ? 'Entrando...' : 'Entrar'}
         </button>
 
-        <p className="text-xs text-center text-muted">
-          Demo: admin@prestamos.local / admin123
-        </p>
+        <div className="text-center">
+          <a href="/recuperar" className="text-xs text-brand hover:underline">Olvidaste tu contrasena?</a>
+        </div>
 
         <div className="text-center text-sm border-t border-line pt-4">
           <span className="text-muted">Eres cliente? </span>

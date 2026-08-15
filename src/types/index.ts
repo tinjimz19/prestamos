@@ -19,6 +19,7 @@ export interface Cliente {
   nombre: string;
   cedula: string | null;
   telefono: string | null;
+  email: string | null;
   direccion: string | null;
   ruta_id: number | null;
   referencia: string | null;
@@ -30,6 +31,17 @@ export interface Score {
   valor: number | null;
   etiqueta: string;
   detalle: { prestamos: number; pagados: number; con_atraso: number; cuotas_vencidas: number };
+}
+
+export interface Dispositivo {
+  id: number;
+  nombre: string | null;
+  ip: string | null;
+  recordar: number;
+  ultima_actividad: string | null;
+  expira_at: string;
+  created_at: string;
+  actual: number;
 }
 
 export interface CuotaPlan {

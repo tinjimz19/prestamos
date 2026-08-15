@@ -12,6 +12,7 @@ export default function NuevoClientePage() {
     nombre: '',
     cedula: '',
     telefono: '',
+    email: '',
     direccion: '',
     referencia: '',
   });
@@ -70,6 +71,7 @@ export default function NuevoClientePage() {
         {field('Nombre', 'nombre', true)}
         {field('Cedula', 'cedula')}
         {field('Telefono', 'telefono')}
+        {field('Correo (para recibos)', 'email')}
         {field('Direccion', 'direccion')}
         {field('Referencia', 'referencia')}
         <button

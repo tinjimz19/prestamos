@@ -4,12 +4,16 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { getSession, clearSession, type Session } from '@/lib/auth';
+import { api } from '@/lib/api';
 import ThemeToggle from '@/components/ThemeToggle';
 import TopLoader from '@/components/TopLoader';
+import Logo from '@/components/Logo';
 
 const NAV = [
   { href: '/admin', label: 'Casas' },
   { href: '/admin/ingresos', label: 'Ingresos' },
+  { href: '/admin/correo', label: 'Correo' },
+  { href: '/admin/dispositivos', label: 'Dispositivos' },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -32,7 +36,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (!session) return null;
 
-  function logout() {
+  async function logout() {
+    try {
+      await api('/auth/logout', { method: 'POST', token: getSession()?.token });
+    } catch {
+      /* ignore */
+    }
     clearSession();
     router.replace('/login');
   }
@@ -42,12 +51,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <TopLoader />
       <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-4 md:px-8 bg-surface/80 backdrop-blur border-b border-line">
         <div className="flex items-center gap-2.5">
-          <span className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-brand to-brand-hover text-brand-fg font-bold shadow-sm shadow-brand/30">
-            S
-          </span>
+          <Logo size={36} className="rounded-xl shadow-sm shadow-brand/30" />
           <div>
-            <div className="font-bold leading-tight">Panel Superadmin</div>
-            <div className="text-xs text-muted leading-tight">Casas de Prestamos</div>
+            <div className="font-bold leading-tight">SisPrest</div>
+            <div className="text-xs text-muted leading-tight">Panel superadmin</div>
           </div>
           <nav className="flex items-center gap-1 ml-1 sm:ml-4">
             {NAV.map((n) => {

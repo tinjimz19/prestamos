@@ -3,6 +3,20 @@ const API_URL =
 
 export const apiBase = API_URL;
 
+// Sesion invalida/expirada: limpia y manda al login (evita bucles en el propio login).
+function onUnauthorized(): void {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.removeItem('prestamos_session');
+  } catch {
+    /* ignore */
+  }
+  const p = window.location.pathname;
+  if (!p.startsWith('/login') && !p.startsWith('/portal')) {
+    window.location.href = '/login';
+  }
+}
+
 type ApiOptions = {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
   body?: unknown;
@@ -40,6 +54,7 @@ export async function api<T = unknown>(path: string, opts: ApiOptions = {}): Pro
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
+      if (res.status === 401 && token) onUnauthorized();
       const msg = (data as { message?: string })?.message ?? `Error ${res.status}`;
       throw new Error(msg);
     }
@@ -63,6 +78,7 @@ export async function apiUpload<T = unknown>(path: string, form: FormData, token
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
+      if (res.status === 401 && token) onUnauthorized();
       const msg = (data as { message?: string })?.message ?? `Error ${res.status}`;
       throw new Error(msg);
     }

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { api } from '@/lib/api';
 import { saveSession } from '@/lib/auth';
+import Logo from '@/components/Logo';
 import type { LoginResponse } from '@/types';
 
 export default function PortalRegistroPage() {
@@ -50,7 +51,8 @@ export default function PortalRegistroPage() {
         onSubmit={onSubmit}
         className="w-full max-w-sm bg-surface rounded-2xl shadow-soft border border-line p-8 space-y-5 animate-fade-in"
       >
-        <div className="text-center">
+        <div className="text-center flex flex-col items-center">
+          <Logo size={48} className="mb-3 rounded-2xl shadow-sm shadow-brand/30" />
           <h1 className="text-xl font-bold text-content">Crear acceso</h1>
           <p className="text-sm text-muted mt-1">
             Usa la cedula que registraste en la oficina

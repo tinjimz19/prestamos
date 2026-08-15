@@ -4,9 +4,11 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { getSession, clearSession, type Session } from '@/lib/auth';
+import { api } from '@/lib/api';
 import { loadMiPlan } from '@/lib/plan';
 import ThemeToggle from '@/components/ThemeToggle';
 import TopLoader from '@/components/TopLoader';
+import Logo from '@/components/Logo';
 import type { Rol, MiPlan } from '@/types';
 
 const ICONS: Record<string, string> = {
@@ -22,6 +24,7 @@ const ICONS: Record<string, string> = {
   '/metodos': 'M2 7h20v10H2zM2 11h20M6 15h4',
   '/auditoria': 'M9 4h6a1 1 0 011 1v1H8V5a1 1 0 011-1zM8 6H6a1 1 0 00-1 1v13a1 1 0 001 1h12a1 1 0 001-1V7a1 1 0 00-1-1h-2M9 11h6M9 15h4',
   '/configuracion': 'M12 15a3 3 0 100-6 3 3 0 000 6zM19.4 15a1.6 1.6 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.6 1.6 0 00-2.7.7 1.6 1.6 0 01-3.2 0 1.6 1.6 0 00-2.7-.7l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.6 1.6 0 00-1.3-2.7 1.6 1.6 0 010-3.2 1.6 1.6 0 001.3-2.7l-.1-.1a2 2 0 112.8-2.8l.1.1a1.6 1.6 0 001.8.3h.1a1.6 1.6 0 001-1.5 1.6 1.6 0 013.2 0 1.6 1.6 0 001 1.5h.1a1.6 1.6 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.6 1.6 0 00-.3 1.8v.1a1.6 1.6 0 001.5 1 1.6 1.6 0 010 3.2 1.6 1.6 0 00-1.5 1z',
+  '/dispositivos': 'M12 18h.01M7 3h10a2 2 0 012 2v14a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2z',
 };
 
 const ITEMS: { href: string; label: string; roles: Rol[]; feature?: string }[] = [
@@ -36,6 +39,7 @@ const ITEMS: { href: string; label: string; roles: Rol[]; feature?: string }[] =
   { href: '/usuarios', label: 'Usuarios', roles: ['admin'] },
   { href: '/auditoria', label: 'Auditoria', roles: ['admin'], feature: 'auditoria' },
   { href: '/configuracion', label: 'Configuracion', roles: ['admin'] },
+  { href: '/dispositivos', label: 'Dispositivos', roles: ['admin', 'cajero', 'cobrador', 'cliente'] },
 ];
 
 function NavIcon({ d }: { d: string }) {
@@ -133,7 +137,12 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
     </div>
   ) : null;
 
-  function logout() {
+  async function logout() {
+    try {
+      await api('/auth/logout', { method: 'POST', token: getSession()?.token });
+    } catch {
+      /* aunque falle, cerramos localmente */
+    }
     clearSession();
     router.replace('/login');
   }
@@ -179,10 +188,8 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
 
   const brand = (mini: boolean) => (
     <div className="flex items-center gap-2">
-      <span className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-brand to-brand-hover text-brand-fg font-bold shadow-sm shadow-brand/30">
-        P
-      </span>
-      {!mini && <span className="font-bold text-content">Prestamos</span>}
+      <Logo size={36} className="rounded-xl shadow-sm shadow-brand/30" />
+      {!mini && <span className="font-bold text-content">SisPrest</span>}
     </div>
   );
 

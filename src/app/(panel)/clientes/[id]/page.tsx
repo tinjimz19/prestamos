@@ -65,6 +65,7 @@ export default function ClienteDetallePage() {
           </div>
           <p className="text-muted text-sm">
             {cliente.telefono ?? 'sin telefono'} - {cliente.cedula ?? 'sin cedula'}
+            {cliente.email ? ' - ' + cliente.email : ''}
           </p>
         </div>
         <Link

@@ -6,6 +6,7 @@ import { api } from '@/lib/api';
 import { getSession } from '@/lib/auth';
 import { money } from '@/lib/format';
 import Pagination from '@/components/Pagination';
+import Logo from '@/components/Logo';
 import { IconEye } from '@/components/icons';
 import type { DashboardData, PrestamoListItem } from '@/types';
 
@@ -148,12 +149,19 @@ export default function DashboardPage() {
       {/* Hero */}
       <div className="relative overflow-hidden rounded-2xl p-6 md:p-8 bg-gradient-to-br from-brand to-brand-hover text-brand-fg shadow-soft">
         <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/10 blur-2xl" />
-        <h1 className="relative text-2xl md:text-3xl font-bold">
-          Hola{nombre ? `, ${nombre}` : ''}
-        </h1>
-        <p className="relative opacity-90 mt-1">
-          Resumen de tu cartera de prestamos y cobranzas
-        </p>
+        <div className="relative flex items-center gap-4">
+          <div className="bg-white/95 rounded-2xl p-1.5 shadow-lg shrink-0">
+            <Logo size={44} className="rounded-xl block" />
+          </div>
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold">
+              Hola{nombre ? `, ${nombre}` : ''}
+            </h1>
+            <p className="opacity-90 mt-1">
+              Resumen de tu cartera de prestamos y cobranzas
+            </p>
+          </div>
+        </div>
       </div>
 
       {error && <div className="text-danger text-sm mt-4">{error}</div>}

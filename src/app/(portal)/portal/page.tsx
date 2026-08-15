@@ -24,8 +24,8 @@ function CuotasTabla({ cuotas }: { cuotas: PortalCuota[] }) {
   const [page, setPage] = useState(1);
   const paged = cuotas.slice((page - 1) * 10, page * 10);
   return (
-    <div className="mt-2 border border-line rounded-lg overflow-hidden">
-      <table className="w-full text-xs">
+    <div className="mt-2 border border-line rounded-lg overflow-x-auto">
+      <table className="w-full text-xs min-w-[440px]">
         <thead className="bg-surface-2 text-muted">
           <tr>
             <th className="px-2 py-1.5 text-left">#</th>

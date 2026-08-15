@@ -81,3 +81,12 @@
   background: rgb(var(--line));
   border-radius: 9999px;
 }
+
+/* Scroll horizontal sin barra visible (navegación, chips) */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

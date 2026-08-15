@@ -130,7 +130,7 @@ export default function UsuariosPage() {
   const paged = usuarios.slice((page - 1) * 10, page * 10);
 
   return (
-    <div className="p-6 md:p-8">
+    <div className="p-4 sm:p-6 md:p-8">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-content">Usuarios</h1>
         <button onClick={() => { setMsg(''); setForm({ ...blankNuevo }); setOpen(true); }} className="bg-gradient-to-br from-brand to-brand-hover text-brand-fg shadow-sm shadow-brand/30 hover:shadow-md active:scale-95 text-sm rounded-lg px-4 py-2">

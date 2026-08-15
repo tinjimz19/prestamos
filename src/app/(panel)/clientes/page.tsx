@@ -85,7 +85,7 @@ export default function ClientesPage() {
   const paged = clientes.slice((page - 1) * 10, page * 10);
 
   return (
-    <div className="p-6 md:p-8">
+    <div className="p-4 sm:p-6 md:p-8">
       <div className="mx-auto">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
@@ -116,8 +116,8 @@ export default function ClientesPage() {
 
         {error && <div className="text-danger text-sm mb-3">{error}</div>}
 
-        <div className="bg-surface rounded-xl border border-line shadow-soft overflow-hidden">
-          <table className="w-full text-sm">
+        <div className="bg-surface rounded-xl border border-line shadow-soft overflow-x-auto">
+          <table className="w-full text-sm min-w-[640px]">
             <thead className="bg-surface-2 text-muted">
               <tr>
                 <th className="text-left px-4 py-2.5">Nombre</th>

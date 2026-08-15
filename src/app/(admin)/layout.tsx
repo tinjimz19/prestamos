@@ -50,13 +50,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="min-h-screen bg-bg text-content">
       <TopLoader />
       <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-4 md:px-8 bg-surface/80 backdrop-blur border-b border-line">
-        <div className="flex items-center gap-2.5">
-          <Logo size={36} className="rounded-xl shadow-sm shadow-brand/30" />
-          <div>
+        <div className="flex items-center gap-2.5 min-w-0">
+          <Logo size={36} className="rounded-xl shadow-sm shadow-brand/30 shrink-0" />
+          <div className="shrink-0">
             <div className="font-bold leading-tight">SisPrest</div>
-            <div className="text-xs text-muted leading-tight">Panel superadmin</div>
+            <div className="text-xs text-muted leading-tight hidden sm:block">Panel superadmin</div>
           </div>
-          <nav className="flex items-center gap-1 ml-1 sm:ml-4">
+          <nav className="flex items-center gap-1 ml-1 sm:ml-4 overflow-x-auto no-scrollbar">
             {NAV.map((n) => {
               const active = pathname === n.href;
               return (

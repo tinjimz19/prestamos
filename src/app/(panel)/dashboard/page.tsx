@@ -145,7 +145,7 @@ export default function DashboardPage() {
   const canSee = rol === 'admin' || rol === 'cajero';
 
   return (
-    <div className="p-6 md:p-8">
+    <div className="p-4 sm:p-6 md:p-8">
       {/* Hero */}
       <div className="relative overflow-hidden rounded-2xl p-6 md:p-8 bg-gradient-to-br from-brand to-brand-hover text-brand-fg shadow-soft">
         <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/10 blur-2xl" />

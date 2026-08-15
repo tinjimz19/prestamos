@@ -222,7 +222,7 @@ export default function PrestamoDetallePage() {
   const equivalente = pago.moneda === 'VES' && tasa ? (Number(pago.monto) || 0) / (Number(tasa.valor) || 1) : 0;
 
   return (
-    <div className="p-6 md:p-8">
+    <div className="p-4 sm:p-6 md:p-8">
       <Link href={`/clientes/${prestamo.cliente_id}`} className="text-sm text-brand hover:underline">
         Volver al cliente
       </Link>
@@ -235,7 +235,7 @@ export default function PrestamoDetallePage() {
             <span className="capitalize">{prestamo.frecuencia}</span>
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {tel && !pagado && (
             <a
               href={waLink(tel, msgRecordatorio)}
@@ -297,8 +297,8 @@ export default function PrestamoDetallePage() {
       <div className="grid md:grid-cols-3 gap-6">
         <div className="md:col-span-2">
           <h2 className="font-semibold text-content mb-2">Plan de cuotas</h2>
-          <div className="bg-surface rounded-xl border border-line shadow-soft overflow-hidden">
-            <table className="w-full text-sm">
+          <div className="bg-surface rounded-xl border border-line shadow-soft overflow-x-auto">
+            <table className="w-full text-sm min-w-[560px]">
               <thead className="bg-surface-2 text-muted">
                 <tr>
                   <th className="px-3 py-2.5 text-left">#</th>
@@ -481,7 +481,7 @@ export default function PrestamoDetallePage() {
               <input type="number" min={0} step="0.01" value={refin.monto_extra} onChange={(e) => setRefin((f) => ({ ...f, monto_extra: e.target.value }))} className={inputCls} placeholder="0.00" />
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
               <label className="text-xs text-muted">Tasa %</label>
               <input type="number" min={0} step="0.01" value={refin.tasa_interes} onChange={(e) => setRefin((f) => ({ ...f, tasa_interes: e.target.value }))} className={inputCls} />

@@ -88,8 +88,8 @@ export default function MetodosPage() {
         </button>
       </div>
 
-      <div className="bg-surface rounded-xl border border-line shadow-soft overflow-hidden">
-        <table className="w-full text-sm">
+      <div className="bg-surface rounded-xl border border-line shadow-soft overflow-x-auto">
+        <table className="w-full text-sm min-w-[480px]">
           <thead className="bg-surface-2 text-muted">
             <tr>
               <th className="px-4 py-2.5 text-left">Metodo</th>

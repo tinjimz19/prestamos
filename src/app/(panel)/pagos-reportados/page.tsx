@@ -52,15 +52,15 @@ export default function PagosReportadosPage() {
   const iconBtn = 'inline-flex items-center justify-center w-8 h-8 rounded-lg transition-colors';
 
   return (
-    <div className="p-6 md:p-8">
+    <div className="p-4 sm:p-6 md:p-8">
       <h1 className="text-2xl font-bold text-content mb-1">Pagos reportados</h1>
       <p className="text-sm text-muted mb-6">
         Pagos que los clientes informaron desde su portal, pendientes de validar.
       </p>
       {error && <div className="text-danger text-sm mb-3">{error}</div>}
 
-      <div className="bg-surface rounded-xl border border-line shadow-soft overflow-hidden">
-        <table className="w-full text-sm">
+      <div className="bg-surface rounded-xl border border-line shadow-soft overflow-x-auto">
+        <table className="w-full text-sm min-w-[680px]">
           <thead className="bg-surface-2 text-muted">
             <tr>
               <th className="px-4 py-2.5 text-left">Fecha</th>

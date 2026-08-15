@@ -64,7 +64,7 @@ export default function AuditoriaPage() {
   const inputCls = 'rounded-lg border border-line px-3 py-2 text-sm';
 
   return (
-    <div className="p-6 md:p-8">
+    <div className="p-4 sm:p-6 md:p-8">
       <h1 className="text-2xl font-bold text-content mb-1">Auditoria</h1>
       <p className="text-sm text-muted mb-6">Registro de acciones de los usuarios en el sistema.</p>
 
@@ -100,8 +100,8 @@ export default function AuditoriaPage() {
 
       {error && <div className="text-danger text-sm mb-3">{error}</div>}
 
-      <div className="bg-surface rounded-xl border border-line shadow-soft overflow-hidden">
-        <table className="w-full text-sm">
+      <div className="bg-surface rounded-xl border border-line shadow-soft overflow-x-auto">
+        <table className="w-full text-sm min-w-[720px]">
           <thead className="bg-surface-2 text-muted">
             <tr>
               <th className="px-4 py-2.5 text-left">Fecha</th>

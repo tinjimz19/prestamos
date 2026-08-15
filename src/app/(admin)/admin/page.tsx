@@ -366,7 +366,7 @@ export default function AdminCasasPage() {
                 <input placeholder="Contacto (opcional)" value={form.contacto} onChange={(e) => set('contacto', e.target.value)} className={inputCls} />
                 <input placeholder="Telefono (opcional)" value={form.telefono} onChange={(e) => set('telefono', e.target.value)} className={inputCls} />
               </div>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <select value={form.plan_id} onChange={(e) => onPlan(Number(e.target.value))} className={inputCls}>
                   {planes.map((p) => <option key={p.id} value={p.id}>{p.nombre}</option>)}
                 </select>
@@ -482,13 +482,13 @@ export default function AdminCasasPage() {
             <div className="text-xs font-semibold text-muted uppercase">{planEdit ? 'Editar plan' : 'Nuevo plan'}</div>
             {planEdit && <button onClick={nuevoPlan} className="text-xs text-brand hover:underline">+ crear otro</button>}
           </div>
-          <div className="grid grid-cols-3 gap-2 mb-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-2">
             <input value={planForm.nombre} onChange={(e) => setPlanForm((f) => ({ ...f, nombre: e.target.value }))} className={inputCls} placeholder="Nombre" />
             <input type="number" min={0} step="0.01" value={planForm.precio} onChange={(e) => setPlanForm((f) => ({ ...f, precio: e.target.value }))} className={inputCls} placeholder="Precio $" />
             <input type="number" min={1} value={planForm.dias} onChange={(e) => setPlanForm((f) => ({ ...f, dias: Number(e.target.value) }))} className={inputCls} placeholder="Dias" />
           </div>
           <p className="text-[11px] text-muted mb-1">Límites (vacío = ilimitado)</p>
-          <div className="grid grid-cols-3 gap-2 mb-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-3">
             <input type="number" min={0} value={planForm.max_clientes} onChange={(e) => setPlanForm((f) => ({ ...f, max_clientes: e.target.value }))} className={inputCls} placeholder="Clientes" />
             <input type="number" min={0} value={planForm.max_usuarios} onChange={(e) => setPlanForm((f) => ({ ...f, max_usuarios: e.target.value }))} className={inputCls} placeholder="Usuarios" />
             <input type="number" min={0} value={planForm.max_prestamos} onChange={(e) => setPlanForm((f) => ({ ...f, max_prestamos: e.target.value }))} className={inputCls} placeholder="Préstamos" />

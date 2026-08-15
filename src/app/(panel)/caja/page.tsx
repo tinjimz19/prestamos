@@ -138,7 +138,7 @@ export default function CajaPage() {
   const dif = cierreInfo ? (Number(contado) || 0) - cierreInfo.esperado : 0;
 
   return (
-    <div className="p-6 md:p-8">
+    <div className="p-4 sm:p-6 md:p-8">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
         <h1 className="text-2xl font-bold text-content">Caja</h1>
         <div className="flex items-center gap-2 flex-wrap">
@@ -198,8 +198,8 @@ export default function CajaPage() {
       )}
 
       <h2 className="font-semibold text-content mb-2">Movimientos</h2>
-      <div className="bg-surface rounded-xl border border-line shadow-soft overflow-hidden mb-8">
-        <table className="w-full text-sm">
+      <div className="bg-surface rounded-xl border border-line shadow-soft overflow-x-auto mb-8">
+        <table className="w-full text-sm min-w-[640px]">
           <thead className="bg-surface-2 text-muted">
             <tr>
               <th className="px-4 py-2.5 text-left">Fecha</th>
@@ -229,8 +229,8 @@ export default function CajaPage() {
       </div>
 
       <h2 className="font-semibold text-content mb-2">Cierres de caja</h2>
-      <div className="bg-surface rounded-xl border border-line shadow-soft overflow-hidden">
-        <table className="w-full text-sm">
+      <div className="bg-surface rounded-xl border border-line shadow-soft overflow-x-auto">
+        <table className="w-full text-sm min-w-[640px]">
           <thead className="bg-surface-2 text-muted">
             <tr>
               <th className="px-4 py-2.5 text-left">Fecha</th>

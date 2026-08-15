@@ -62,7 +62,7 @@ export default function ReportesPage() {
   const pct = gan && gan.esperado_vs_real.esperado > 0 ? Math.round((gan.esperado_vs_real.real / gan.esperado_vs_real.esperado) * 100) : 0;
 
   return (
-    <div className="p-6 md:p-8">
+    <div className="p-4 sm:p-6 md:p-8">
       <h1 className="text-2xl font-bold text-content mb-6">Reportes</h1>
 
       {/* Rango + exportar */}
@@ -135,8 +135,8 @@ export default function ReportesPage() {
           <div className="grid md:grid-cols-2 gap-4">
             <div>
               <h3 className="text-sm font-medium text-muted mb-1">Por modalidad</h3>
-              <div className="bg-surface rounded-xl border border-line shadow-soft overflow-hidden">
-                <table className="w-full text-sm">
+              <div className="bg-surface rounded-xl border border-line shadow-soft overflow-x-auto">
+                <table className="w-full text-sm min-w-[480px]">
                   <thead className="bg-surface-2 text-muted"><tr><th className="px-4 py-2 text-left">Modalidad</th><th className="px-4 py-2 text-right">Cobrado</th><th className="px-4 py-2 text-right">Ganancia</th></tr></thead>
                   <tbody>
                     {gan.por_modalidad.length === 0 ? (
@@ -154,8 +154,8 @@ export default function ReportesPage() {
             </div>
             <div>
               <h3 className="text-sm font-medium text-muted mb-1">Por cobrador</h3>
-              <div className="bg-surface rounded-xl border border-line shadow-soft overflow-hidden">
-                <table className="w-full text-sm">
+              <div className="bg-surface rounded-xl border border-line shadow-soft overflow-x-auto">
+                <table className="w-full text-sm min-w-[480px]">
                   <thead className="bg-surface-2 text-muted"><tr><th className="px-4 py-2 text-left">Cobrador</th><th className="px-4 py-2 text-right">Cobrado</th><th className="px-4 py-2 text-right">Ganancia</th></tr></thead>
                   <tbody>
                     {gan.por_cobrador.length === 0 ? (
@@ -177,8 +177,8 @@ export default function ReportesPage() {
 
       {/* Morosos */}
       <h2 className="font-semibold text-content mb-2">Morosos ({rep.morosos.length})</h2>
-      <div className="bg-surface rounded-xl border border-line shadow-soft overflow-hidden">
-        <table className="w-full text-sm">
+      <div className="bg-surface rounded-xl border border-line shadow-soft overflow-x-auto">
+        <table className="w-full text-sm min-w-[520px]">
           <thead className="bg-surface-2 text-muted">
             <tr><th className="px-4 py-2.5 text-left">Cliente</th><th className="px-4 py-2.5 text-left">Telefono</th><th className="px-4 py-2.5 text-right">Saldo</th><th className="px-4 py-2.5"></th></tr>
           </thead>

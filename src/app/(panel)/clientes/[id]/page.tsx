@@ -44,7 +44,7 @@ export default function ClienteDetallePage() {
   const paged = prestamos.slice((page - 1) * 10, page * 10);
 
   return (
-    <div className="p-6 md:p-8">
+    <div className="p-4 sm:p-6 md:p-8">
       <Link href="/clientes" className="text-sm text-brand hover:underline">Volver a clientes</Link>
       <div className="flex items-center justify-between mt-2 mb-6">
         <div>
@@ -77,8 +77,8 @@ export default function ClienteDetallePage() {
       </div>
 
       <h2 className="font-semibold text-content mb-2">Prestamos</h2>
-      <div className="bg-surface rounded-xl border border-line shadow-soft overflow-hidden">
-        <table className="w-full text-sm">
+      <div className="bg-surface rounded-xl border border-line shadow-soft overflow-x-auto">
+        <table className="w-full text-sm min-w-[640px]">
           <thead className="bg-surface-2 text-muted">
             <tr>
               <th className="text-left px-4 py-2.5">#</th>

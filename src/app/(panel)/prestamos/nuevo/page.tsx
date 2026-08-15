@@ -288,8 +288,8 @@ export default function NuevoPrestamoPage() {
                 </div>
               </div>
 
-              <div className="max-h-64 overflow-y-auto border border-line rounded-lg">
-                <table className="w-full text-xs">
+              <div className="max-h-64 overflow-auto border border-line rounded-lg">
+                <table className="w-full text-xs min-w-[440px]">
                   <thead className="bg-surface-2 text-muted sticky top-0">
                     <tr>
                       <th className="px-2 py-1 text-left">#</th>
